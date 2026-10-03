@@ -1,4 +1,4 @@
-use crate::lexical_analysis::Token;
+use crate::lexical_analysis::*;
 
 #[derive(Debug, PartialEq)]
 pub enum AST {
@@ -6,7 +6,7 @@ pub enum AST {
     Identifier(String),
     FunctionCall(String, Vec<AST>),
     // Litteral Values
-    NumericLitteral(f64),
+    NumericLitteral(i64),
     StringLitteral(String),
     True,
     False,
@@ -26,6 +26,43 @@ pub enum AST {
     Definition(String, Vec<AST>),
 }
 
-pub fn parser(code: Vec<Token>) -> AST {
+pub fn parse_expr(expr: Vec<Token>) -> AST {
+    // Addition and Subtraction
+    let mut i: usize = 0;
+    while i < expr.len() {
+        if expr[i] == Token::Add {
+            return AST::Add(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+        }
+        if expr[i] == Token::Subtract {
+            return AST::Subtract(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+        }
+        i += 1;
+    }
+    // Multiplication and Division
+    let mut i: usize = 0;
+    while i < expr.len() {
+        if expr[i] == Token::Multiply {
+            return AST::Multiply(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+        }
+        if expr[i] == Token::Divide {
+            return AST::Divide(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+        }
+        i += 1;
+    }
+    // constants
+    match &expr[0] {
+        Token::True => AST::True,
+        Token::False => AST::False,
+        Token::NumericLitteral(i) => AST::NumericLitteral(*i),
+        Token::StringLitteral(i) => AST::StringLitteral(i.to_string()),
+        _ => panic!("syntax error in expression parsing"),
+    }
+}
+
+pub fn parse_block(block: Vec<Token>, current_indentation: u16) -> Vec<AST> {
     todo!()
+}
+
+pub fn parse(code: Vec<Token>) -> AST {
+    AST::Root(parse_block(code, 0))
 }

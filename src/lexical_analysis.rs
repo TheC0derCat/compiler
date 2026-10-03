@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     // Core lexicon
     Tab,
@@ -67,35 +67,37 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
                 }
                 iter.next();
                 Token::StringLitteral(buffer)
-            },
-            _ => if ch.is_alphanumeric() {
-                let mut buffer: String = String::new();
-                buffer.push(ch);
-                while iter.clone().next().unwrap().is_alphanumeric() {
-                    buffer.push(iter.next().expect("unexpected file end"));
+            }
+            _ => {
+                if ch.is_alphanumeric() {
+                    let mut buffer: String = String::new();
+                    buffer.push(ch);
+                    while iter.clone().next().unwrap().is_alphanumeric() {
+                        buffer.push(iter.next().expect("unexpected file end"));
+                    }
+                    let buffer: &str = buffer.as_str();
+                    match buffer.parse::<i64>() {
+                        Ok(i) => Token::NumericLitteral(i),
+                        Err(_) => match buffer {
+                            // Boolean
+                            "true" => Token::True,
+                            "false" => Token::False,
+                            "and" => Token::And,
+                            "or" => Token::Or,
+                            "not" => Token::Not,
+                            // Statements
+                            "if" => Token::If,
+                            "while" => Token::While,
+                            "def" => Token::Def,
+                            "int" => Token::IntType,
+                            "str" => Token::StrType,
+                            _ => Token::Identifier(buffer.to_string()),
+                        },
+                    }
+                } else {
+                    return Err(LexicalError::Weirdchar);
                 }
-                let buffer: &str = buffer.as_str();
-                match buffer.parse::<i64>() {
-                    Ok(i) => Token::NumericLitteral(i),
-                    Err(_) => match buffer {
-                        // Boolean
-                        "true" => Token::True,
-                        "false" => Token::False,
-                        "and" => Token::And,
-                        "or" => Token::Or,
-                        "not" => Token::Not,
-                        // Statements
-                        "if" => Token::If,
-                        "while" => Token::While,
-                        "def" => Token::Def,
-                        "int" => Token::IntType,
-                        "str" => Token::StrType,
-                        _ => Token::Identifier(buffer.to_string()),
-                    },
-                }
-            } else {
-                return Err(LexicalError::Weirdchar);
-            } 
+            }
         };
         tokens.push(new_token);
     }

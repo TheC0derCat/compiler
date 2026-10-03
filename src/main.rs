@@ -52,4 +52,25 @@ mod tests {
             ])
         );
     }
+    #[test]
+    fn test_syntax_analysis() {
+        assert_eq!(
+            parse_expr(vec![
+                Token::NumericLitteral(1),
+                Token::Add,
+                Token::NumericLitteral(1)
+            ]),
+            AST::Add(Box::new(AST::NumericLitteral(1)), Box::new(AST::NumericLitteral(1)))
+        );
+        assert_eq!(
+            parse_expr(vec![
+                Token::NumericLitteral(1),
+                Token::Add,
+                Token::NumericLitteral(1),
+                Token::Multiply,
+                Token::NumericLitteral(1),
+            ]),
+            AST::Add(Box::new(AST::Multiply(Box::new(AST::NumericLitteral(1)), Box::new(AST::NumericLitteral(1)))), Box::new(AST::NumericLitteral(1)))
+        );
+    }
 }
