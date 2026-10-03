@@ -5,7 +5,8 @@ pub enum AST {
     Root(Vec<AST>),
     Identifier(String),
     FunctionCall(String, Vec<AST>),
-    Setto(String, Box<AST>),
+    VariableDeclaration(String, Token, Box<AST>),
+    VariableAssignment(String, Box<AST>),
     // Litteral Values
     NumericLitteral(i64),
     StringLitteral(String),
@@ -27,19 +28,38 @@ pub enum AST {
 }
 
 pub fn parse_expr(expr: Vec<Token>) -> AST {
+    // Variable Assignment and Declaration
+    let mut i: usize = 0;
+    while i < expr.len() {
+        if expr[i] == Token::SetTo {
+            match expr[i - 1] {
+                Token::Identifier(ref s) => {
+                    return AST::VariableAssignment(
+                        s.to_string(),
+                        Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+                    );
+                }
+                Token::Star => {
+                    todo!()
+                }
+                _ => panic!("unexcpected token!"),
+            }
+        }
+        i += 1;
+    }
     // Addition and Subtraction
     let mut i: usize = 0;
     while i < expr.len() {
         if expr[i] == Token::Add {
             return AST::Add(
-                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
                 Box::new(parse_expr(expr[0..i].to_vec())),
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
             );
         }
         if expr[i] == Token::Subtract {
             return AST::Subtract(
-                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
                 Box::new(parse_expr(expr[0..i].to_vec())),
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
             );
         }
         i += 1;
@@ -49,14 +69,14 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
     while i < expr.len() {
         if expr[i] == Token::Multiply {
             return AST::Multiply(
-                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
                 Box::new(parse_expr(expr[0..i].to_vec())),
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
             );
         }
         if expr[i] == Token::Divide {
             return AST::Divide(
-                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
                 Box::new(parse_expr(expr[0..i].to_vec())),
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
             );
         }
         i += 1;
@@ -67,6 +87,7 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
         Token::False => AST::False,
         Token::NumericLitteral(i) => AST::NumericLitteral(*i),
         Token::StringLitteral(i) => AST::StringLitteral(i.to_string()),
+        Token::Identifier(i) => AST::Identifier(i.to_string()),
         _ => panic!("syntax error in expression parsing"),
     }
 }

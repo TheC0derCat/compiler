@@ -82,12 +82,28 @@ mod tests {
                 Token::NumericLitteral(1),
             ]),
             AST::Add(
+                Box::new(AST::NumericLitteral(1)),
                 Box::new(AST::Multiply(
                     Box::new(AST::NumericLitteral(1)),
                     Box::new(AST::NumericLitteral(1))
                 )),
-                Box::new(AST::NumericLitteral(1))
             )
+        );
+        assert_eq!(
+            parse_expr(vec![
+                Token::Identifier("myvar".to_string()),
+                Token::SetTo,
+                Token::NumericLitteral(17),
+                Token::Add,
+                Token::NumericLitteral(42)
+            ]),
+            AST::VariableAssignment(
+                "myvar".to_string(),
+                Box::new(AST::Add(
+                    Box::new(AST::NumericLitteral(17)),
+                    Box::new(AST::NumericLitteral(42))
+                ))
+            ) 
         );
     }
 }
