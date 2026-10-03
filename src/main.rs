@@ -23,5 +23,13 @@ mod tests {
                 Token::NumericLitteral(1)
             ])
         );
+        assert_eq!(
+            lex("1 + 1 ".to_string()),
+            Ok(vec![
+                Token::NumericLitteral(1),
+                Token::Add,
+                Token::NumericLitteral(1)
+            ])
+        );
     }
 }

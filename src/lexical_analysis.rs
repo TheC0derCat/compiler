@@ -71,10 +71,22 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
                 while iter.clone().next().unwrap().is_alphanumeric() {
                     buffer.push(iter.next().expect("unexpected file end"));
                 }
-                let buffer: String = buffer.into_iter().collect();
+                let buffer: String = buffer.iter().cloned().collect::<String>();
+                let buffer: &str = buffer.as_str();
                 match buffer.parse::<i64>() {
                     Ok(i) => Token::NumericLitteral(i),
-                    Err(_) => Token::Identifier(buffer),
+                    Err(_) => match buffer {
+                        // Boolean
+                        "and" => Token::And,
+                        "or" => Token::Or,
+                        "not" => Token::Not,
+                        // Statements
+                        "if" => Token::If,
+                        "while" => Token::While,
+                        "def" => Token::Def,
+                        " " => continue,
+                        _ => Token::Identifier(buffer.to_string()),
+                    },
                 }
             } else {
                 return Err(LexicalError::Weirdchar);
