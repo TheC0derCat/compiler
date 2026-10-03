@@ -64,12 +64,11 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
                 Token::StringLitteral(buffer)
             },
             _ => if ch.is_alphanumeric() {
-                let mut buffer: Vec<char> = Vec::new();
+                let mut buffer: String = String::new();
                 buffer.push(ch);
                 while iter.clone().next().unwrap().is_alphanumeric() {
                     buffer.push(iter.next().expect("unexpected file end"));
                 }
-                let buffer: String = buffer.iter().cloned().collect::<String>();
                 let buffer: &str = buffer.as_str();
                 match buffer.parse::<i64>() {
                     Ok(i) => Token::NumericLitteral(i),
@@ -94,6 +93,5 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
         };
         tokens.push(new_token);
     }
-    tokens.pop(); // pops off the final newline
     Ok(tokens)
 }
