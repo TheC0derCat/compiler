@@ -64,6 +64,8 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
                             thetype,
                             Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
                         );
+                    } else {
+                        panic!("cant declare variable without a name for it lmao");
                     }
                 }
             }
