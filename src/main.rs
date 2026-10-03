@@ -103,7 +103,21 @@ mod tests {
                     Box::new(AST::NumericLitteral(17)),
                     Box::new(AST::NumericLitteral(42))
                 ))
-            ) 
+            )
+        );
+        assert_eq!(
+            parse_expr(vec![
+                Token::Identifier("myvar".to_string()),
+                Token::Star,
+                Token::IntType,
+                Token::SetTo,
+                Token::NumericLitteral(500)
+            ]),
+            AST::VariableDeclaration(
+                "myvar".to_string(),
+                DataType::IntType,
+                Box::new(AST::NumericLitteral(500))
+            )
         );
     }
 }

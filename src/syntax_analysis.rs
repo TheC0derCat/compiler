@@ -1,11 +1,18 @@
 use crate::lexical_analysis::*;
 
 #[derive(Debug, PartialEq)]
+pub enum DataType {
+    IntType,
+    StrType,
+    BoolType,
+}
+
+#[derive(Debug, PartialEq)]
 pub enum AST {
     Root(Vec<AST>),
     Identifier(String),
     FunctionCall(String, Vec<AST>),
-    VariableDeclaration(String, Token, Box<AST>),
+    VariableDeclaration(String, DataType, Box<AST>),
     VariableAssignment(String, Box<AST>),
     // Litteral Values
     NumericLitteral(i64),
@@ -33,16 +40,32 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
     while i < expr.len() {
         if expr[i] == Token::SetTo {
             match expr[i - 1] {
+                // Assignment
                 Token::Identifier(ref s) => {
                     return AST::VariableAssignment(
                         s.to_string(),
                         Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
                     );
                 }
-                Token::Star => {
-                    todo!()
+                // Declaration
+                _ => {
+                    let thetype: DataType = match expr[i - 1] {
+                        Token::IntType => DataType::IntType,
+                        Token::StrType => DataType::StrType,
+                        Token::BoolType => DataType::BoolType,
+                        _ => panic!("{:?} is not a valid type", expr[i - 1]),
+                    };
+                    if expr[i - 2] != Token::Star {
+                        panic!("invalid assignment");
+                    }
+                    if let Token::Identifier(ref s) = expr[i - 3] {
+                        return AST::VariableDeclaration(
+                            s.to_string(),
+                            thetype,
+                            Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+                        );
+                    }
                 }
-                _ => panic!("unexcpected token!"),
             }
         }
         i += 1;

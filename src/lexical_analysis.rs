@@ -31,6 +31,7 @@ pub enum Token {
     // Types
     IntType,
     StrType,
+    BoolType,
 }
 #[derive(Debug, PartialEq)]
 pub enum LexicalError {
@@ -93,8 +94,10 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
                             "if" => Token::If,
                             "while" => Token::While,
                             "def" => Token::Def,
+                            // types
                             "int" => Token::IntType,
                             "str" => Token::StrType,
+                            "bool" => Token::BoolType,
                             _ => Token::Identifier(buffer.to_string()),
                         },
                     }
