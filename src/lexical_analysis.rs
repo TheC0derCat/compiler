@@ -1,5 +1,6 @@
+#[derive(Debug, PartialEq)]
 pub enum Token {
-    // Core syntax
+    // Core lexicon
     Tab,
     LineEnd,
     Star,
@@ -8,7 +9,7 @@ pub enum Token {
     ClosingParen,
     Comma,
     // Litteral Values
-    NumericLitteral(f64),
+    NumericLitteral(i64),
     StringLitteral(String),
     True,
     False,
@@ -27,6 +28,59 @@ pub enum Token {
     While,
     Def,
 }
-fn lexer(code: String) -> Option<Vec<Token>> {
-    todo!()
+#[derive(Debug, PartialEq)]
+pub enum LexicalError {
+    EmptyString,
+    Weirdchar,
+}
+pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
+    if code.is_empty() {
+        return Err(LexicalError::EmptyString);
+    }
+    let mut iter = code.chars();
+    let mut tokens: Vec<Token> = Vec::new();
+    while let Some(ch) = iter.next() {
+        let new_token = match ch {
+            '\t' => Token::Tab,
+            '\n' => Token::LineEnd,
+            ':' => Token::Star,
+            '(' => Token::OpeningParen,
+            ')' => Token::ClosingParen,
+            ',' => Token::Comma,
+            // Litteral Values
+            'a' => Token::True,
+            'a' => Token::False,
+            // Operators
+            // Numeric
+            '+' => Token::Add,
+            '-' => Token::Subtract,
+            '*' => Token::Multiply,
+            '/' => Token::Divide,
+            // Boolean
+            'a' => Token::And,
+            'a' => Token::Or,
+            'a' => Token::Not,
+            // Statements
+            'a' => Token::If,
+            'a' => Token::While,
+            'a' => Token::Def,
+            ' ' => continue,
+            _ => if ch.is_alphanumeric() {
+                let mut buffer: Vec<char> = Vec::new();
+                buffer.push(ch);
+                while iter.clone().next().unwrap().is_alphanumeric() {
+                    buffer.push(iter.next().expect("unexpected file end"));
+                }
+                let buffer: String = buffer.into_iter().collect();
+                match buffer.parse::<i64>() {
+                    Ok(i) => Token::NumericLitteral(i),
+                    Err(_) => Token::Identifier(buffer),
+                }
+            } else {
+                return Err(LexicalError::Weirdchar);
+            } 
+        };
+        tokens.push(new_token);
+    }
+    Ok(tokens)
 }

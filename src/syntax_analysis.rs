@@ -1,25 +1,31 @@
-use crate::lexical_analysis;
+use crate::lexical_analysis::Token;
 
+#[derive(Debug, PartialEq)]
 pub enum AST {
-	Root(Vec<AST>),
-	Identifier(String),
-	// Litteral Values
-	NumericLitteral(f64),
-	StringLitteral(String),
-	True,
-	False,
-	// Operators
-	// Numeric
-	Add(AST, AST),
-	Subtract(AST, AST),
-	Multiply(AST, AST),
-	Divide(AST, AST),
-	// Boolean
-	And(AST, AST),
-	Or(AST, AST),
-	Not(AST),
-	// Statements
-	If(AST, Vec<AST>),
-	While(AST, Vec<AST>),
-	Def(String, Vec<AST>),
+    Root(Vec<AST>),
+    Identifier(String),
+    FunctionCall(String, Vec<AST>),
+    // Litteral Values
+    NumericLitteral(f64),
+    StringLitteral(String),
+    True,
+    False,
+    // Operators
+    // Numeric
+    Add(Box<AST>, Box<AST>),
+    Subtract(Box<AST>, Box<AST>),
+    Multiply(Box<AST>, Box<AST>),
+    Divide(Box<AST>, Box<AST>),
+    // Boolean
+    And(Box<AST>, Box<AST>),
+    Or(Box<AST>, Box<AST>),
+    Not(Box<AST>),
+    // Statements
+    If(Box<AST>, Vec<AST>),
+    While(Box<AST>, Vec<AST>),
+    Definition(String, Vec<AST>),
+}
+
+pub fn parser(code: Vec<Token>) -> AST {
+    todo!()
 }
