@@ -16,7 +16,7 @@ mod tests {
     fn test_lexical_analysis() {
         assert_eq!(lex("".to_string()), Err(LexicalError::EmptyString));
         assert_eq!(
-            lex("1+1 ".to_string()),
+            lex("1+1\n".to_string()),
             Ok(vec![
                 Token::NumericLitteral(1),
                 Token::Add,
@@ -24,11 +24,19 @@ mod tests {
             ])
         );
         assert_eq!(
-            lex("1 + 1 ".to_string()),
+            lex("1 + 1\n".to_string()),
             Ok(vec![
                 Token::NumericLitteral(1),
                 Token::Add,
                 Token::NumericLitteral(1)
+            ])
+        );assert_eq!(
+            lex("print(\"Hello, world!\")\n".to_string()),
+            Ok(vec![
+                Token::Identifier("print".to_string()),
+                Token::OpeningParen,
+                Token::StringLitteral("Hello, world!".to_string()),
+                Token::ClosingParen,
             ])
         );
     }

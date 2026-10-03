@@ -41,30 +41,28 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
     let mut tokens: Vec<Token> = Vec::new();
     while let Some(ch) = iter.next() {
         let new_token = match ch {
+            // Core lexicon
             '\t' => Token::Tab,
             '\n' => Token::LineEnd,
             ':' => Token::Star,
             '(' => Token::OpeningParen,
             ')' => Token::ClosingParen,
             ',' => Token::Comma,
-            // Litteral Values
-            'a' => Token::True,
-            'a' => Token::False,
             // Operators
-            // Numeric
             '+' => Token::Add,
             '-' => Token::Subtract,
             '*' => Token::Multiply,
             '/' => Token::Divide,
-            // Boolean
-            'a' => Token::And,
-            'a' => Token::Or,
-            'a' => Token::Not,
-            // Statements
-            'a' => Token::If,
-            'a' => Token::While,
-            'a' => Token::Def,
+            // Other
             ' ' => continue,
+            '"' => {
+                let mut buffer: String = String::new();
+                while iter.clone().next().unwrap() != '"' {
+                    buffer.push(iter.next().expect("unexpected file end"));
+                }
+                iter.next();
+                Token::StringLitteral(buffer)
+            },
             _ => if ch.is_alphanumeric() {
                 let mut buffer: Vec<char> = Vec::new();
                 buffer.push(ch);
@@ -77,6 +75,8 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
                     Ok(i) => Token::NumericLitteral(i),
                     Err(_) => match buffer {
                         // Boolean
+                        "true" => Token::True,
+                        "false" => Token::False,
                         "and" => Token::And,
                         "or" => Token::Or,
                         "not" => Token::Not,
@@ -94,5 +94,6 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
         };
         tokens.push(new_token);
     }
+    tokens.pop(); // pops off the final newline
     Ok(tokens)
 }
