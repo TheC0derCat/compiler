@@ -3,7 +3,7 @@ pub enum Token {
     Tab,
     LineEnd,
     Star,
-    Identifier,
+    Identifier(String),
     OpeningParen,
     ClosingParen,
     Comma,
