@@ -68,6 +68,10 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
                 iter.next();
                 Token::StringLitteral(buffer)
             }
+            '#' => {
+                while iter.next().unwrap() != '\n' {}
+                Token::LineEnd
+            }
             _ => {
                 if ch.is_alphanumeric() {
                     let mut buffer: String = String::new();

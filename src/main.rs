@@ -51,6 +51,14 @@ mod tests {
                 Token::LineEnd,
             ])
         );
+        assert_eq!(
+            lex("x#hi\n3 ".to_string()),
+            Ok(vec![
+                Token::Identifier("x".to_string()),
+                Token::LineEnd,
+                Token::NumericLitteral(3),
+            ])
+        );
     }
     #[test]
     fn test_syntax_analysis() {
@@ -60,7 +68,10 @@ mod tests {
                 Token::Add,
                 Token::NumericLitteral(1)
             ]),
-            AST::Add(Box::new(AST::NumericLitteral(1)), Box::new(AST::NumericLitteral(1)))
+            AST::Add(
+                Box::new(AST::NumericLitteral(1)),
+                Box::new(AST::NumericLitteral(1))
+            )
         );
         assert_eq!(
             parse_expr(vec![
@@ -70,7 +81,13 @@ mod tests {
                 Token::Multiply,
                 Token::NumericLitteral(1),
             ]),
-            AST::Add(Box::new(AST::Multiply(Box::new(AST::NumericLitteral(1)), Box::new(AST::NumericLitteral(1)))), Box::new(AST::NumericLitteral(1)))
+            AST::Add(
+                Box::new(AST::Multiply(
+                    Box::new(AST::NumericLitteral(1)),
+                    Box::new(AST::NumericLitteral(1))
+                )),
+                Box::new(AST::NumericLitteral(1))
+            )
         );
     }
 }

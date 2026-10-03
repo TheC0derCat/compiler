@@ -5,13 +5,13 @@ pub enum AST {
     Root(Vec<AST>),
     Identifier(String),
     FunctionCall(String, Vec<AST>),
+    Setto(String, Box<AST>),
     // Litteral Values
     NumericLitteral(i64),
     StringLitteral(String),
     True,
     False,
     // Operators
-    // Numeric
     Add(Box<AST>, Box<AST>),
     Subtract(Box<AST>, Box<AST>),
     Multiply(Box<AST>, Box<AST>),
@@ -31,10 +31,16 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
     let mut i: usize = 0;
     while i < expr.len() {
         if expr[i] == Token::Add {
-            return AST::Add(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+            return AST::Add(
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+                Box::new(parse_expr(expr[0..i].to_vec())),
+            );
         }
         if expr[i] == Token::Subtract {
-            return AST::Subtract(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+            return AST::Subtract(
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+                Box::new(parse_expr(expr[0..i].to_vec())),
+            );
         }
         i += 1;
     }
@@ -42,10 +48,16 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
     let mut i: usize = 0;
     while i < expr.len() {
         if expr[i] == Token::Multiply {
-            return AST::Multiply(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+            return AST::Multiply(
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+                Box::new(parse_expr(expr[0..i].to_vec())),
+            );
         }
         if expr[i] == Token::Divide {
-            return AST::Divide(Box::new(parse_expr(expr[(i+1)..expr.len()].to_vec())), Box::new(parse_expr(expr[0..i].to_vec()))) 
+            return AST::Divide(
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+                Box::new(parse_expr(expr[0..i].to_vec())),
+            );
         }
         i += 1;
     }
