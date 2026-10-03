@@ -7,6 +7,7 @@ pub enum Token {
     Identifier(String),
     OpeningParen,
     ClosingParen,
+    SetTo,
     Comma,
     // Litteral Values
     NumericLitteral(i64),
@@ -27,6 +28,9 @@ pub enum Token {
     If,
     While,
     Def,
+    // Types
+    IntType,
+    StrType,
 }
 #[derive(Debug, PartialEq)]
 pub enum LexicalError {
@@ -47,6 +51,7 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
             ':' => Token::Star,
             '(' => Token::OpeningParen,
             ')' => Token::ClosingParen,
+            '=' => Token::SetTo,
             ',' => Token::Comma,
             // Operators
             '+' => Token::Add,
@@ -83,7 +88,8 @@ pub fn lex(code: String) -> Result<Vec<Token>, LexicalError> {
                         "if" => Token::If,
                         "while" => Token::While,
                         "def" => Token::Def,
-                        " " => continue,
+                        "int" => Token::IntType,
+                        "str" => Token::StrType,
                         _ => Token::Identifier(buffer.to_string()),
                     },
                 }

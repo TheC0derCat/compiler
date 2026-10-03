@@ -30,13 +30,25 @@ mod tests {
                 Token::Add,
                 Token::NumericLitteral(1)
             ])
-        );assert_eq!(
+        );
+        assert_eq!(
             lex("print(\"Hello, world!\") ".to_string()),
             Ok(vec![
                 Token::Identifier("print".to_string()),
                 Token::OpeningParen,
                 Token::StringLitteral("Hello, world!".to_string()),
                 Token::ClosingParen,
+            ])
+        );
+        assert_eq!(
+            lex("x: int = 20\n".to_string()),
+            Ok(vec![
+                Token::Identifier("x".to_string()),
+                Token::Star,
+                Token::IntType,
+                Token::SetTo,
+                Token::NumericLitteral(20),
+                Token::LineEnd,
             ])
         );
     }
