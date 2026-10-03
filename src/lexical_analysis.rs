@@ -27,6 +27,6 @@ pub enum Token {
     While,
     Def,
 }
-fn Lexer(code: String) -> Option<Vec<Token>> {
+fn lexer(code: String) -> Option<Vec<Token>> {
     todo!()
 }
