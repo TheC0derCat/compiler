@@ -72,6 +72,33 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
         }
         i += 1;
     }
+    // Logical And and Logical Or
+    let mut i: usize = 0;
+    while i < expr.len() {
+        if expr[i] == Token::And {
+            return AST::And(
+                Box::new(parse_expr(expr[0..i].to_vec())),
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+            );
+        }
+        if expr[i] == Token::Or {
+            return AST::Or(
+                Box::new(parse_expr(expr[0..i].to_vec())),
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+            );
+        }
+        i += 1;
+    }
+    // logical not
+    let mut i: usize = 0;
+    while i < expr.len() {
+        if expr[i] == Token::Not {
+            return AST::Not(
+                Box::new(parse_expr(expr[(i + 1)..expr.len()].to_vec())),
+            );
+        }
+        i += 1;
+    }
     // Addition and Subtraction
     let mut i: usize = 0;
     while i < expr.len() {
@@ -106,7 +133,7 @@ pub fn parse_expr(expr: Vec<Token>) -> AST {
         }
         i += 1;
     }
-    // constants
+    // single bits
     match &expr[0] {
         Token::True => AST::True,
         Token::False => AST::False,
